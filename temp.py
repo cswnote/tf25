@@ -1,7 +1,6 @@
 # Lab 9 XOR
 # 9-3 deep and wide
 import tensorflow as tf
-from tensorflow.keras.utils import plot_model
 import numpy as np
 
 x_data = np.array([[0, 0], [0, 1], [1, 0], [1, 1]], dtype=np.float32)
@@ -18,7 +17,6 @@ tf.model.add(tf.keras.layers.Dense(units=1, activation='sigmoid'))
 # or you may use activation='relu', study chapter 10 to know more on vanishing gradient problem.
 tf.model.compile(loss='binary_crossentropy', optimizer=tf.optimizers.Adam(lr=0.1), metrics=['accuracy'])
 tf.model.summary()
-plot_model(tf.model, to_file='temp.png')
 
 history = tf.model.fit(x_data, y_data, epochs=5000)
 

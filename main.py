@@ -1,28 +1,45 @@
 import tensorflow as tf
-from tensorflow.keras.layers import InputLayer, Activation, Dense, Flatten
-from tensorflow.keras.utils import plot_model
-from tensorflow.keras.optimizers import SGD, Adam
-from tensorflow.keras import Sequential, Model
+from tensorflow.keras.datasets.mnist import load_data
+from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras import models
+from tensorflow.keras.layers import Dense, Input
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.utils import to_categorical, plot_model
+
+from sklearn.model_selection import train_test_split
+
 import numpy as np
+import matplotlib.pyplot as plt
+plt.style.use('seaborn-white')
 
-x_data = np.array([[0, 0], [0, 1], [1, 0], [1, 1]], dtype=np.float32)
-y_data = np.array([[0], [1], [1], [0]], dtype=np.float32)
+tf.random.set_seed(111)
 
-model = Sequential([InputLayer(input_shape=x_data.shape[1:], name='input'),
-                    Dense(10, activation='sigmoid', name='dense_0'),
-                    Dense(10, activation='sigmoid', name='dense_1'),
-                    Dense(10, activation='sigmoid', name='dense_2'),
-                    Dense(10, activation='sigmoid', name='dense_3'),
-                    Dense(1, activation='sigmoid', name='output')])
-model.compile(loss='binary_crossentropy', optimizer=Adam(learning_rate=0.1), metrics=['accuracy'])
-model.summary()
-plot_model(model, to_file='main.png')
+(x_train_full, y_train_full), (x_test, y_test) = load_data(path='mnist.npz')
 
-history = model.fit(x_data, y_data, epochs=5000)
+x_train, x_val, y_train, y_val = train_test_split(x_train_full, y_train_full, test_size=0.3, random_state=111)
 
-prediction = model.predict(x_data)
-print('Prediction: \n', prediction)
+num_x_train = x_train.shape[0]
+num_x_val = x_val.shape[0]
+num_x_test = x_test.shape[0]
 
-score = model.evaluate(x_data, y_data)
-print('Loss: ', score[0])
-print('Accuracy: ', score[1])
+print('all data: {}\tlabel: {}'.format(x_train_full.shape, y_train_full.shape))
+print('train data: {}\tlabel: {}'.format(x_train.shape, y_train.shape))
+print('validation data: {}\tlabel: {}'.format(x_val.shape, y_val.shape))
+print('test data: {}\tlabel: {}'.format(x_test.shape, y_test.shape))
+
+
+num_sample = 5
+random_idxs = np.random.randint(60000, size=num_sample)
+
+plt.figure(figsize=(15, 3))
+for i, idx in enumerate(random_idxs):
+    img = x_train_full[idx, :]
+    label = y_train_full[idx]
+
+    plt.subplot(1, len(random_idxs), i+1)
+    plt.imshow(img)
+    plt.title('index: {}, label: {}'.format(idx, label))
+plt.show()
+
+print(np.max(x_train_full))
+print(np.min(x_train_full))
