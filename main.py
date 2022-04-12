@@ -8,6 +8,8 @@ from tensorflow.keras.utils import to_categorical, plot_model
 
 from sklearn.model_selection import train_test_split
 
+# testing, 테스트 중
+
 import numpy as np
 import matplotlib.pyplot as plt
 plt.style.use('seaborn-white')
