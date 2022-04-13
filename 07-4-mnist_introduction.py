@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from sklearn.metrics import classification_report, confusion_matrix
-import seaborn as sns
+# import seaborn as sns
 
 plt.style.use('seaborn-white')
 
