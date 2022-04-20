@@ -18,13 +18,13 @@ model = Sequential([
 
 model.compile(loss='binary_crossentropy', optimizer=SGD(learning_rate=0.1), metrics=['accuracy'])
 model.summary()
-plot_model(model, to_file='09-4 model.png')
+plot_model(model, to_file='09-4 model.jpg', show_shapes=True)
 
 # prepare callback
 log_dir = os.path.join(".", "logs", "fit", datetime.datetime.now().strftime('%Y%m%d-%H%M%S'))
 tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
 
-# add callback param to fit()
+# add callback param to fit()tenso
 history = model.fit(x_data, y_data, epochs=10000, callbacks=[tensorboard_callback])
 
 predictions = model.predict(x_data)

@@ -13,7 +13,7 @@ model = Sequential([InputLayer(input_shape=x_data.shape[1:], name='input'),
                     Dense(1, activation='sigmoid', name='output')])
 model.compile(loss='binary_crossentropy', optimizer=SGD(lr=0.1), metrics=['accuracy'])
 model.summary()
-plot_model(model)
+plot_model(model, to_file='09-2-xor-nn.jpg', show_shapes=True)
 
 history = model.fit(x_data, y_data, epochs=10000)
 

@@ -19,7 +19,7 @@ model = Sequential([InputLayer(input_shape=x_data.shape[1], name='input'),
 
 model.compile(loss='binary_crossentropy', optimizer=Adam(learning_rate=0.1), metrics=['accuracy'])
 model.summary()
-plot_model(model, to_file='09-3 model.png')
+plot_model(model, to_file='09-3 model.jpg', show_shapes=True)
 
 history = model.fit(x_data, y_data, epochs=5000)
 

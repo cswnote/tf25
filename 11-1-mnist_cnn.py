@@ -23,15 +23,15 @@ training_epochs = 12
 batch_size = 128
 
 model = Sequential([InputLayer(input_shape=x_train.shape[1:]),
-                    Conv2D(filters=16, kernel_size=(3, 3), input_shape=x_train.shape[1:], activation='relu'),
-                    MaxPool2D(pool_size=(2, 2)), # strides=2 가 기본인 것으로 보아, pool_size와 연동되는 듯
-                    Conv2D(filters=32, kernel_size=(3, 3), activation='relu'),
-                    MaxPool2D(pool_size=(2, 2)),
+                    Conv2D(filters=16, kernel_size=(3, 3), input_shape=x_train.shape[1:], activation='relu', padding='SAME'),
+                    MaxPool2D(pool_size=(2, 2), padding='SAME'), # strides=2 가 기본인 것으로 보아, pool_size와 연동되는 듯
+                    Conv2D(filters=32, kernel_size=(3, 3), activation='relu', padding='SAME'),
+                    MaxPool2D(pool_size=(2, 2), padding='SAME'),
                     Flatten(),
                     Dense(10, kernel_initializer='glorot_normal', activation='softmax')])
 model.compile(loss='categorical_crossentropy', optimizer=Adam(learning_rate=lr), metrics='accuracy')
 model.summary()
-plot_model(model, to_file='11-1-mnist_cnn.py.png')
+plot_model(model, to_file='11-1-mnist_cnn.py.png', show_shapes=True)
 
 model.fit(x_train, y_train, batch_size=batch_size, epochs=training_epochs)
 
