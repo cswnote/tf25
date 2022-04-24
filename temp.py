@@ -66,7 +66,7 @@ testX, testY = build_dataset(test_set, seq_length)
 print(trainX.shape)  # (505, 7, 5)
 print(trainY.shape)
 
-tf.model = tf.keras.Sequential();
+tf.model = tf.keras.Sequential()
 tf.model.add(tf.keras.layers.LSTM(units=1, input_shape=(seq_length, data_dim)))
 tf.model.add(tf.keras.layers.Dense(units=output_dim, activation='tanh'))
 tf.model.summary()
