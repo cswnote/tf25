@@ -49,7 +49,7 @@ model = Sequential([
     TimeDistributed(Dense(num_classes, activation='softmax'))
 ])
 model.summary()
-# plot_model(model, to_file='12-4-rnn_long_char.jpg', show_shapes=True)
+plot_model(model, to_file='12-4-rnn_long_char.jpg', show_shapes=True)
 
 model.compile(loss='categorical_crossentropy', optimizer=Adam(learning_rate=lr), metrics=['accuracy'])
 model.fit(dataX, dataY, epochs=100)
