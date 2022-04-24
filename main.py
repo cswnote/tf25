@@ -6,7 +6,9 @@ from tensorflow.keras.models import Sequential, Model
 
 import numpy as np
 import matplotlib.pyplot as plt
-
+import os
+# # activate at window
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 def MinMaxScaler(data):
     ''' Min Max Normalization
