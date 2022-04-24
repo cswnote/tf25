@@ -5,33 +5,43 @@ from tensorflow.keras.layers import InputLayer, Input, Flatten, Dense, TimeDistr
 from tensorflow.keras.models import Sequential, Model
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 
-sentence = ("if you want to build a ship, don't drum up people together to "
-            "collect wood and don't assign them tasks and work, but rather "
-            "teach them to long for the endless immensity of the sea.")
+def MinMaxScaler(data):
+    ''' Min Max Normalization
+    Parameters
+    ----------
+    data : numpy.ndarray
+        input data to be normalized
+        shape: [Batch size, dimension]
+    Returns
+    ----------
+    data : numpy.ndarry
+        normalized data
+        shape: [Batch size, dimension]
+    References
+    ----------
+    .. [1] http://sebastianraschka.com/Articles/2014_about_feature_scaling.html
+    '''
+    numerator = data - np.min(data, 0)
+    denominator = np.max(data, 0) - np.min(data, 0)
+    # noise term prevents the zero division
+    return numerator / (denominator + 1e-7)
 
-char_set = list(set(sentence))
-char_dic = {key: i for i, key in enumerate(char_set)}
+# train Parameters
+seq_length = 7
+data_dim = 5
+output_dim = 1
+learning_rate = 0.01
+iterations = 500
 
-data_dim = len(char_set)
-hidden_size = len(char_set)
-num_classes = len(char_set)
-sequence_length = 10 # Any arbitrary number
-lr = 0.1
+# Open, High, Low, Volume, Close
+xy = np.loadtxt('data-02-stock_daily.csv', delimiter=',')
+xy = xy[::-1]  # reverse order (chronically ordered)
 
-dataX = []
-dataY = []
-for i in range(0, len(sentence)-sequence_length):
-    x_str = sentence[i:i + sequence_length]
-    y_str = sentence[i + 1:i + sequence_length + 1]
-    print(i, x_str, '->', y_str)
-
-    x = [char_dic[key] for key in x_str]
-    y = [char_dic[key] for key in y_str]
-
-    dataX.append(x)
-    dataY.append(y)
-
-batch_size = len(dataX)
+# train/test split
+train_size = int(len(xy) * 0.7)
+train_set = xy[0:train_size]
+test_set = xy[train_size - seq_length]
 
