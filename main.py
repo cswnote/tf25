@@ -52,8 +52,10 @@ x_test = x_test / 255.
 
 if cnn == 1:
     model = Sequential([InputLayer(input_shape=x_train.shape[1:], name='input'),
-                        Conv3D(filters=16, kernel_size=(3, 3, 3), input_shape=x_train.shape[1:], activation='relu', padding='SAME'),
-                        MaxPool3D(pool_size=(1, 1, 1), padding='SAME'),
+                        Conv3D(filters=16, kernel_size=(5, 5, 3), input_shape=x_train.shape[1:], activation='relu', padding='SAME'),
+                        MaxPool3D(pool_size=(2, 2, 1), padding='SAME'),
+                        # Conv3D(filters=32, kernel_size=(3, 3, 3), input_shape=x_train.shape[1:], activation='relu', padding='SAME'),
+                        # MaxPool3D(pool_size=(1, 1, 1), padding='SAME'),
                         Flatten(),
                         Dense(10, kernel_initializer='glorot_normal', activation='softmax')
                         ])
@@ -71,7 +73,7 @@ model.summary()
 plot_model(model, to_file='main.jpg', show_shapes=True)
 model.compile(loss='sparse_categorical_crossentropy', optimizer=Adam(learning_rate=0.001), metrics=['accuracy'])
 
-history = model.fit(x_train, y_train, epochs=100, validation_data=(x_val, y_val))
+history = model.fit(x_train, y_train, epochs=50, validation_data=(x_val, y_val))
 record = history.history
 print('train record: ', record['loss'][-1], record['accuracy'][-1])
 print('validation record: ', record['val_loss'][-1], record['val_accuracy'][-1])
