@@ -52,18 +52,18 @@ x_test = x_test / 255.
 
 if cnn == 1:
     model = Sequential([InputLayer(input_shape=x_train.shape[1:], name='input'),
-                        Conv3D(filters=16, kernel_size=(3, 3, 3), input_shape=x_train.shape[1:], activation='relu', padding='SAME'),
-                        MaxPool3D(pool_size=(1, 1, 1), padding='SAME'),
-                        Flatten(),
-                        Dense(10, kernel_initializer='glorot_normal', activation='softmax')
-                        ])
+                Conv3D(filters=16, kernel_size=(5, 5, 3), input_shape=x_train.shape[1:], activation='relu', padding='SAME'),
+                MaxPool3D(pool_size=(1, 1, 1), padding='SAME'),
+                Flatten(),
+                Dense(10, kernel_initializer='glorot_normal', activation='softmax')
+                ])
 else:
     model = Sequential([InputLayer(input_shape=x_train.shape[1:], name='input'),
                         Flatten(input_shape=x_train.shape[1:], name='flatten'),
-                        Dense(1000, kernel_initializer='glorot_normal', activation='relu'),
-                        Dense(1000, kernel_initializer='glorot_normal', activation='relu'),
-                        Dense(1000, kernel_initializer='glorot_normal', activation='relu'),
-                        Dense(1000, kernel_initializer='glorot_normal', activation='relu'),
+                        Dense(100, kernel_initializer='glorot_normal', activation='relu'),
+                        # Dense(100, kernel_initializer='glorot_normal', activation='relu'),
+                        # Dense(100, kernel_initializer='glorot_normal', activation='relu'),
+                        # Dense(100, kernel_initializer='glorot_normal', activation='relu'),
                         Dense(10, kernel_initializer='glorot_normal', activation='softmax', name='output')
                         ])
 
