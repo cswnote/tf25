@@ -9,69 +9,61 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 import matplotlib.pyplot as plt
 
-cnn = 1
-
 tf.random.set_seed(111)
 
 (x_train_full, y_train_full), (x_test, y_test) = cifar10.load_data()
+
+class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
+
 print(x_train_full.shape, x_test.shape)
 print(y_train_full.shape, y_test.shape)
 
-if cnn == 1:
-    x_train_full = x_train_full.reshape(-1, 32, 32, 3, 1)
-    x_test = x_test.reshape(-1, 32, 32, 3, 1)
-    # x_train_full = tf.expand_dims(x_train_full.shape[:, -1], 1) # 방법을 찾아보자
 
-    print(x_train_full.shape)
-    print(x_test.shape)
 
-x_train, x_val, y_train, y_val = train_test_split(x_train_full, y_train_full, test_size=0.3, random_state=111)
+num_sample = 25
+random_idxs = np.random.randint(x_train_full.shape[0], size=num_sample)
+plt.figure(figsize=(14, 25))
+for i, idx in enumerate(random_idxs):
+    img = x_train_full[idx, :]
+    # label = y_train[idx]
+    label = class_names[y_train_full[idx][0]]
 
-# num_sample = 25
-# random_idxs = np.random.randint(x_train.shape[0], size=num_sample)
-# plt.figure(figsize=(14, 25))
-# for i, idx in enumerate(random_idxs):
-#     img = x_train[idx, :]
-#     label = y_train[idx]
-#
-#     plt.subplot(5, int(len(random_idxs) / 5), i + 1)
-#     plt.imshow(img)
-#     plt.title('index: {}, label: {}'.format(idx, label))
-# plt.show()
+    plt.subplot(5, int(len(random_idxs) / 5), i + 1)
+    plt.imshow(img)
+    plt.title('index: {}, label: {}'.format(idx, label))
+plt.show()
 
-print(np.max(x_train))
-print(np.min(x_train))
+x_train_full = x_train_full / 255.
 
-x_train = x_train / 255.
-x_val = x_val / 255.
-x_test = x_test / 255.
+data_split = False
 
-# y_train = to_categorical(y_train)
-# y_val = to_categorical(y_val)
-# y_test = to_categorical(y_test)
-
-if cnn == 1:
-    model = Sequential([InputLayer(input_shape=x_train.shape[1:], name='input'),
-                Conv3D(filters=16, kernel_size=(5, 5, 3), input_shape=x_train.shape[1:], activation='relu', padding='SAME'),
-                MaxPool3D(pool_size=(1, 1, 1), padding='SAME'),
-                Flatten(),
-                Dense(10, kernel_initializer='glorot_normal', activation='softmax')
-                ])
+if data_split:
+    x_train, x_val, y_train, y_val = train_test_split(x_train_full, y_train_full, test_size=0.3, random_state=111)
 else:
-    model = Sequential([InputLayer(input_shape=x_train.shape[1:], name='input'),
-                        Flatten(input_shape=x_train.shape[1:], name='flatten'),
-                        Dense(100, kernel_initializer='glorot_normal', activation='relu'),
-                        # Dense(100, kernel_initializer='glorot_normal', activation='relu'),
-                        # Dense(100, kernel_initializer='glorot_normal', activation='relu'),
-                        # Dense(100, kernel_initializer='glorot_normal', activation='relu'),
-                        Dense(10, kernel_initializer='glorot_normal', activation='softmax', name='output')
-                        ])
+    x_train = x_train_full
+    y_train = y_train_full
+
+model = Sequential([InputLayer(input_shape=x_train.shape[1:], name='input'),
+            Conv2D(filters=32, kernel_size=(3, 3), activation='relu'),
+            MaxPool2D(pool_size=(2, 2)),
+            Conv2D(filters=64, kernel_size=(3, 3), activation='relu'),
+            MaxPool2D(pool_size=(2, 2)),
+            Conv2D(filters=64, kernel_size=(3, 3), activation='relu'),
+            Flatten(),
+            Dense(64, activation='relu'),
+            Dense(10, activation='softmax')
+            ])
 
 model.summary()
 plot_model(model, to_file='main.jpg', show_shapes=True)
-model.compile(loss='sparse_categorical_crossentropy', optimizer=Adam(learning_rate=0.001), metrics=['accuracy'])
+model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-history = model.fit(x_train, y_train, epochs=100, validation_data=(x_val, y_val))
+if data_split:
+    history = model.fit(x_train, y_train, epochs=30, validation_data=(x_val, y_val))
+else:
+    history = model.fit(x_train, y_train, epochs=30, validation_data=(x_test, y_test))
+
+
 record = history.history
 print('train record: ', record['loss'][-1], record['accuracy'][-1])
 print('validation record: ', record['val_loss'][-1], record['val_accuracy'][-1])

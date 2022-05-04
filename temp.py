@@ -1,86 +1,91 @@
-'''
-This script shows how to predict stock prices using a basic RNN
-'''
-import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import datasets, layers, models
+
+cifar10 = datasets.cifar10
+(train_images, train_labels), (test_images, test_labels) = cifar10.load_data()
+
+class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
+
+print("Train samples:", train_images.shape, train_labels.shape)
+print("Test samples:", test_images.shape, test_labels.shape)
+
+train_images = train_images.reshape((50000, 32, 32, 3))
+test_images = test_images.reshape((10000, 32, 32, 3))
+
+plt.figure(figsize=(10, 10))
+for i in range(25):
+    plt.subplot(5, 5, i + 1)
+    plt.xticks([])
+    plt.yticks([])
+    plt.grid(False)
+    plt.imshow(train_images[i])
+    plt.xlabel(class_names[train_labels[i][0]])
+plt.show()
+
+train_images = train_images / 255.0
+test_images = test_images / 255.0
+
+model = models.Sequential()
+model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(32, 32, 3)))
+model.add(layers.MaxPooling2D((2, 2)))
+model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+model.add(layers.MaxPooling2D((2, 2)))
+model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+model.add(layers.Flatten())
+model.add(layers.Dense(64, activation='relu'))
+model.add(layers.Dense(10, activation='softmax'))
+
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+model.fit(train_images, train_labels, epochs=10)
+
+test_loss, test_acc = model.evaluate(test_images, test_labels)
+
+print('Test accuracy:', test_acc)
+
+predictions = model.predict(test_images)
 
 
-def MinMaxScaler(data):
-    ''' Min Max Normalization
-    Parameters
-    ----------
-    data : numpy.ndarray
-        input data to be normalized
-        shape: [Batch size, dimension]
-    Returns
-    ----------
-    data : numpy.ndarry
-        normalized data
-        shape: [Batch size, dimension]
-    References
-    ----------
-    .. [1] http://sebastianraschka.com/Articles/2014_about_feature_scaling.html
-    '''
-    numerator = data - np.min(data, 0)
-    denominator = np.max(data, 0) - np.min(data, 0)
-    # noise term prevents the zero division
-    return numerator / (denominator + 1e-7)
+def plot_image(i, predictions_array, true_label, img):
+    predictions_array, true_label, img = predictions_array[i], true_label[i], img[i]
+    plt.grid(False)
+    plt.xticks([])
+    plt.yticks([])
+
+    plt.imshow(img, cmap=plt.cm.binary)
+
+    predicted_label = np.argmax(predictions_array)
+    if predicted_label == true_label:
+        color = 'blue'
+    else:
+        color = 'red'
+
+    plt.xlabel("{} {:2.0f}% ({})".format(class_names[predicted_label],
+                                         100 * np.max(predictions_array),
+                                         class_names[true_label[0]]),
+               color=color)
 
 
-# train Parameters
-seq_length = 7
-data_dim = 5
-output_dim = 1
-learning_rate = 0.01
-iterations = 500
+def plot_value_array(i, predictions_array, true_label):
+    predictions_array, true_label = predictions_array[i], true_label[i]
+    plt.grid(False)
+    plt.xticks([])
+    plt.yticks([])
+    thisplot = plt.bar(range(10), predictions_array, color="#777777")
+    plt.ylim([0, 1])
+    predicted_label = np.argmax(predictions_array)
 
-# Open, High, Low, Volume, Close
-xy = np.loadtxt('../data-02-stock_daily.csv', delimiter=',')
-xy = xy[::-1]  # reverse order (chronically ordered)
-
-# train/test split
-train_size = int(len(xy) * 0.7)
-train_set = xy[0:train_size]
-test_set = xy[train_size - seq_length:]  # Index from [train_size - seq_length] to utilize past sequence
-
-# Scale each
-train_set = MinMaxScaler(train_set)
-test_set = MinMaxScaler(test_set)
-
-# build datasets
-def build_dataset(time_series, seq_length):
-    dataX = []
-    dataY = []
-    for i in range(0, len(time_series) - seq_length):
-        x = time_series[i:i + seq_length, :]
-        y = time_series[i + seq_length, [-1]]  # Next close price
-        print(x, "->", y)
-        dataX.append(x)
-        dataY.append(y)
-    return np.array(dataX), np.array(dataY)
-
-trainX, trainY = build_dataset(train_set, seq_length)
-testX, testY = build_dataset(test_set, seq_length)
-
-print(trainX.shape)  # (505, 7, 5)
-print(trainY.shape)
-
-tf.model = tf.keras.Sequential()
-tf.model.add(tf.keras.layers.LSTM(units=1, input_shape=(seq_length, data_dim)))
-tf.model.add(tf.keras.layers.Dense(units=output_dim, activation='tanh'))
-tf.model.summary()
-
-tf.model.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(lr=learning_rate))
-tf.model.fit(trainX, trainY, epochs=iterations)
+    thisplot[predicted_label].set_color('red')
+    thisplot[true_label[0]].set_color('blue')
 
 
-# Test step
-test_predict = tf.model.predict(testX)
-
-# Plot predictions
-plt.plot(testY)
-plt.plot(test_predict)
-plt.xlabel("Time Period")
-plt.ylabel("Stock Price")
+i = 0
+plt.figure(figsize=(6, 3))
+plt.subplot(1, 2, 1)
+plot_image(i, predictions, test_labels, test_images)
+plt.subplot(1, 2, 2)
+plot_value_array(i, predictions, test_labels)
 plt.show()
