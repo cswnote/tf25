@@ -101,8 +101,8 @@ vectorize_layer = tf.keras.layers.TextVectorization(
 train_text = raw_train_ds.map(lambda x, y: x)
 vectorize_layer.adapt(train_text)
 
-def vectorize_test(text, label):
-    text = tf.expand.dims(text, -1)
+def vectorize_text(text, label):
+    text = tf.expand_dims(text, -1)
     return vectorize_layer(text), label
 
 # retrieve a batch (of 32 reviews and labels) from the dataset
