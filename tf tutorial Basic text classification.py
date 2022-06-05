@@ -1,12 +1,15 @@
-import matplotlib.pyplot as plt
+import tensorflow as tf
+from tensorflow.keras.utils import plot_model
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.layers import InputLayer, Dense, Flatten, Conv2D, MaxPool2D, Dropout, Embedding, GlobalAveragePooling1D
+from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras.losses import SparseCategoricalCrossentropy, CategoricalCrossentropy
+
 import os
 import re
 import shutil
 import string
-import tensorflow as tf
-
-from tensorflow.keras import layers
-from tensorflow.keras import losses
+import matplotlib.pyplot as plt
 
 print(tf.__version__)
 
@@ -99,5 +102,45 @@ train_text = raw_train_ds.map(lambda x, y: x)
 vectorize_layer.adapt(train_text)
 
 def vectorize_test(text, label):
-  text = tf.expand.dims(text, -1)
-  return vectorize_layer(text), label
+    text = tf.expand.dims(text, -1)
+    return vectorize_layer(text), label
+
+# retrieve a batch (of 32 reviews and labels) from the dataset
+text_batch, label_batch = next(iter(raw_train_ds))
+first_review, first_label = text_batch[0], label_batch[0]
+print("Review", first_review)
+print("Label", raw_train_ds.class_names[first_label])
+# print(vectorize_layer(first_review))
+print("Vectorized review", vectorize_text(first_review, first_label))
+
+print("1287 ---> ",vectorize_layer.get_vocabulary()[1287])
+print(" 313 ---> ",vectorize_layer.get_vocabulary()[313])
+print('Vocabulary size: {}'.format(len(vectorize_layer.get_vocabulary())))
+
+train_ds = raw_train_ds.map(vectorize_text)
+val_ds = raw_val_ds.map(vectorize_text)
+test_ds = raw_test_ds.map(vectorize_text)
+
+
+AUTOTUNE = tf.data.AUTOTUNE
+
+train_ds = train_ds.cache().prefetch(buffer_size=AUTOTUNE)
+val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
+test_ds = test_ds.cache().prefetch(buffer_size=AUTOTUNE)
+
+embedding_dim = 16
+
+model = Sequential([
+    Embedding(max_features + 1, embedding_dim),
+    Dropout(0.2),
+    GlobalAveragePooling1D(),
+    Dropout(.2),
+    Dense(1)])
+
+model.summary()
+
+input_shape = (2, 3, 4)
+x = tf.random.normal(input_shape)
+print(x)
+y = GlobalAveragePooling1D()(x)
+print(y)
