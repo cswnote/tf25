@@ -3,7 +3,7 @@ from tensorflow.keras.utils import plot_model
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import InputLayer, Dense, Flatten, Conv2D, MaxPool2D, Dropout, Embedding, GlobalAveragePooling1D
 from tensorflow.keras.models import Sequential, Model
-from tensorflow.keras.losses import SparseCategoricalCrossentropy, CategoricalCrossentropy
+from tensorflow.keras.losses import SparseCategoricalCrossentropy, CategoricalCrossentropy, BinaryCrossentropy
 
 import os
 import re
@@ -136,11 +136,9 @@ model = Sequential([
     GlobalAveragePooling1D(),
     Dropout(.2),
     Dense(1)])
-
 model.summary()
+plot_model(model, show_shapes=True, to_file='tf tutorial Basic text classification.jpg')
 
-input_shape = (2, 3, 4)
-x = tf.random.normal(input_shape)
-print(x)
-y = GlobalAveragePooling1D()(x)
-print(y)
+model.compile(loss=BinaryCrossentropy(from_logits=True),
+              optimizer='adam',
+              metrics=tf.metrics.BinaryAccuracy(threshold=0.0))
