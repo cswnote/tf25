@@ -18,5 +18,6 @@ url = 'https://storage.googleapis.com/download.tensorflow.org/data/stack_overflo
 
 # # 뭔가 이상함, cache_subdir=file로 한 후 '' 해야 directory 구조가 원하는 대로 됨
 dataset = tf.keras.utils.get_file(file, origin=url, untar=True, cache_dir='.' , cache_subdir='')
+dataset = tf.keras.utils.get_file(file, origin=url, untar=True, cache_dir='.' , cache_subdir=file)
 
 os.listdir(dataset)

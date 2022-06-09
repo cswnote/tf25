@@ -9,6 +9,8 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 import matplotlib.pyplot as plt
 
+print(tf.__version__)
+
 tf.random.set_seed(111)
 
 (x_train_full, y_train_full), (x_test, y_test) = cifar10.load_data()
