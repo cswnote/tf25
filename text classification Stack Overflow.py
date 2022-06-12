@@ -29,7 +29,35 @@ seed = 42
 raw_train = tf.keras.utils.text_dataset_from_directory(
     train_dir, batch_size=batch_size, validation_split=0.2, subset='training', seed=seed)
 
-for text_batch, label_batch in raw_train.take(1):
-  for i in range(3):
-    print("Review", text_batch.numpy()[i])
-    print("Label", label_batch.numpy()[i])
+a = next(iter(raw_train.take(1)))
+print(a[0][0])
+print(raw_train.class_names[a[1][0]])
+print(a[1][0])
+
+for text, label in raw_train.take(1):
+    for i in range(1):
+        print('=================================')
+        print(raw_train.class_names[label[i]])
+        print('=================================')
+        print(text[i].numpy())
+        print('=================================')
+        print(text[i])
+        print('=================================')
+
+val_train = tf.keras.utils.text_dataset_from_directory(
+    'stack_overflow_16k/train',
+    batch_size=batch_size,
+    validation_split=0.2,
+    subset='validation',
+    seed=seed)
+
+test_dir = os.path.join(dataset + '/test')
+test = tf.keras.utils.text_dataset_from_directory(test_dir, batch_size=batch_size)
+
+sub_dir = os.listdir(train_dir)[0]
+sample_file = os.path.join(train_dir, sub_dir)
+sample_file = os.path.join(sample_file, os.listdir(sample_file)[0])
+print(sample_file)
+
+tf.string(sample_file)
+
