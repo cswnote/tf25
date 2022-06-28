@@ -36,9 +36,9 @@ def pack_row(*row):
 
 packed_ds = ds.batch(10000).map(pack_row).unbatch()
 
-for features,label in packed_ds.batch(1000).take(1):
-  print(features[0])
-  plt.hist(features.numpy().flatten(), bins = 101)
+# for features,label in packed_ds.batch(1000).take(1):
+#   print(features[0])
+#   plt.hist(features.numpy().flatten(), bins = 101)
 
 
 N_VALIDATION = int(1e3)
@@ -61,17 +61,16 @@ lr_schedule = tf.keras.optimizers.schedules.InverseTimeDecay(
 
 
 def get_optimizer():
-  print(lr_schedule)
   return Adam(lr_schedule)
 
 
-step = np.linspace(0, 100000)
-lr = lr_schedule(step)
-plt.figure(figsize = (8, 6))
-plt.plot(step/STEPS_PER_EPOCH, lr)
-plt.ylim([0, max(plt.ylim())])
-plt.xlabel('Epoch')
-_ = plt.ylabel('Learning Rate')
+# step = np.linspace(0, 100000)
+# lr = lr_schedule(step)
+# plt.figure(figsize = (8, 6))
+# plt.plot(step/STEPS_PER_EPOCH, lr)
+# plt.ylim([0, max(plt.ylim())])
+# plt.xlabel('Epoch')
+# _ = plt.ylabel('Learning Rate')
 
 
 def get_callbacks(name):
@@ -103,6 +102,14 @@ def compile_and_fit(model, name, optimizer=None, max_epochs=10000):
   return history
 
 
+tiny_model = tf.keras.Sequential([
+    Dense(16, activation='elu', input_shape=(FEATURES,)),
+    Dense(1)
+])
+
+size_histories = {}
+
+size_histories['Tiny'] = compile_and_fit(tiny_model, 'sizes/Tiny')
 
 
 print('===============')
