@@ -30,7 +30,7 @@ ds = tf.data.experimental.CsvDataset(gz, [float(),]*(FEATURES+1), compression_ty
 
 def pack_row(*row):
   label = row[0]
-  features = tf.stack(row[1:],1)
+  features = tf.stack(row[1:], 1)
   return features, label
 
 
