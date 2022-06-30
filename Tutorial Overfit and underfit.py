@@ -35,10 +35,12 @@ def pack_row(*row):
 
 
 packed_ds = ds.batch(10000).map(pack_row).unbatch()
+# packed_ds = packed_ds.map(pack_row)
+# packed_ds = packed_ds.unbatch()
 
-# for features,label in packed_ds.batch(1000).take(1):
-#   print(features[0])
-#   plt.hist(features.numpy().flatten(), bins = 101)
+for features,label in packed_ds.batch(1000).take(1):
+  print(features[0])
+  plt.hist(features.numpy().flatten(), bins = 101)
 
 
 N_VALIDATION = int(1e3)
