@@ -17,41 +17,16 @@ titanic = pd.read_csv("https://storage.googleapis.com/tf-datasets/titanic/train.
 titanic_features = titanic.copy()
 titanic_labels = titanic_features.pop('survived')
 
-inputs = {}
-for name, column in titanic_features.items():
-    print(name)
-    print(column)
-    dtype = column.dtype
-    if dtype == object:
-        dtype = tf.string
-    else:
-        dtype = tf.float32
+titanic_features_dict = {name: np.array(value)
+                         for name, value in titanic_features.items()}
 
-    inputs[name] = tf.keras.Input(shape=(1, ), name=name, dtype=dtype)
+import itertools
 
-numeric_inputs = {name:input for name, input in inputs.items() if input.dtype==tf.float32}
-x = tf.keras.layers.Concatenate()(list(numeric_inputs.values()))
-norm = Normalization()
+def slices(features):
+    for i in itertools.count():
+        example = {name1: value1[i] for name1, value1 in features.items()}
+        yield example
 
-# titanic에서 dtype이 tf.float32인 열에 대한 normalize
-# 단 열 이름을 titanic_features에서 구했으므로 survived는 빠짐
-norm.adapt(np.array(titanic[numeric_inputs.keys()]))
-all_numeric_inputs = norm(x)
-
-all_numeric_inputs
-
-preprocessed_inputs = [all_numeric_inputs]
-
-for name, input in inputs.items():
-    if input.dtype == tf.float32:
-        continue
-
-    lookup = tf.keras.layers.StringLookup(vocabulary=np.unique(titanic_features[name]))
-    print(name, type(input.dtype))
-    one_hot = tf.keras.layers.CategoryEncoding(num_tokens=lookup.vocabulary_size())
-
-    x = lookup(input)
-    x = one_hot(x)
-    preprocessed_inputs.append(x)
-
-print('================================')
+for example in slices(titanic_features_dict):
+    for name2, value2 in example.items():
+        print(f"{name2:19}: {value2}")
