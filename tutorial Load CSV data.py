@@ -1,60 +1,63 @@
 import pandas as pd
 import numpy as np
+
+np.set_printoptions(precision=3, suppress=True)
+
 import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras.layers import Normalization, Dense
-from tensorflow.keras.losses import MeanSquaredError
-from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.layers import InputLayer, Dense, Flatten, Conv2D, MaxPool2D, Dropout, Embedding, GlobalAveragePooling1D, Activation, Normalization
 from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras.losses import SparseCategoricalCrossentropy, CategoricalCrossentropy, BinaryCrossentropy
+from tensorflow.keras.utils import plot_model
+from tensorflow.keras.optimizers import Adam
 
-titanic = pd.read_csv("https://storage.googleapis.com/tf-datasets/titanic/train.csv")
-titanic.head()
+print(tf.__version__ )
 
-titanic_features = titanic.copy()
-titanic_labels = titanic_features.pop('survived')
+fonts_zip = tf.keras.utils.get_file(
+    'fonts.zip',  "https://archive.ics.uci.edu/ml/machine-learning-databases/00417/fonts.zip",
+    cache_dir='.', cache_subdir='fonts',
+    extract=True
+)
 
-# Create a symbolic input
-input = keras.layers.Input(shape=(), dtype=tf.float32)
+import pathlib
 
-# Perform a calculation using the input
-result = 2 * input + 1
+font_csvs = sorted(str(p) for p in pathlib.Path('fonts').glob('*.csv'))
 
-# # one example of using Model layer, input is tf tensor
-calc = Model(inputs=input, outputs=result)
+print(font_csvs)
 
-# # change data type to tf datatype and then put it in dict
-inputs = {}
-for name, column in titanic_features.items():
-    dtype = column.dtype
-    if dtype == object:
-        dtype = tf.string
-    else:
-        dtype = tf.float32
-    inputs[name] = keras.Input(shape=(1,), name=name, dtype=dtype)
+fonts_ds = tf.data.experimental.make_csv_dataset(
+    file_pattern = 'fonts/*.csv',
+    batch_size=1, num_epochs=1,
+    num_parallel_reads=20,
+    shuffle_buffer_size=10000)
 
-# # extract numeric type data
-numeric_inputs = {name:input for name, input in inputs.items() if input.dtype==tf.float32}
+for features in fonts_ds.take(1):
+    for i, (name, value) in enumerate(features.items()):
+        print(f"{name:20s}: {value}")
+print('...')
+print(f"[total: {len(features)} features]")
 
-for key, value in numeric_inputs.items():
-    print(value)
+print('=======')
 
-print('============')
-print(list(numeric_inputs.values()))
 
-# # maybe make list data to tensor layer
-x = tf.keras.layers.Concatenate()(list(numeric_inputs.values()))
-norm = Normalization()
-norm.adapt(np.array(titanic[numeric_inputs.keys()]))
-all_numeric_inputs = norm(x)
+import re
 
-preprocessed_inputs = [all_numeric_inputs]
+def make_images(features):
+    image = [None]*400
+    new_feats = {}
 
-for name, input in inputs.items():
-    if input.dtype == tf.float32:
-        continue
-    lookup = keras.layers.StringLookup(vocabulary=np.unique(titanic_features[name]))
-    one_hot = keras.layers.CategoryEncoding(num_tokens=lookup.vocabulary_size())
+    for name, value in features.items():
+        match = re.match('r(\d+)c(\d+)', name)
+        if match:
+            print(int(match.group(1)))
+            print(int(match.group(2)))
+            image[int(match.group(1))*20 + int(match.group(2))] = value
+        else:
+            new_feats[name] = value
 
-    x = lookup(input)
-    x = one_hot(x)
-    preprocessed_inputs.apend(x)
+    image = tf.stack(image, axis=0)
+    image = tf.reshape(image, [20, 20, -1])
+    new_feats['image'] = image
+
+    return new_feats
+
+fonts_image_ds = make_images(features)
