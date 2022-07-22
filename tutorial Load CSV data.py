@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 import numpy as np
 
@@ -12,27 +14,18 @@ from tensorflow.keras.layers import Input, Dense, Normalization
 
 print(tf.__version__)
 
-import os
-path = os.getcwd()
-abalone_train = pd.read_csv(
-    path + "/abalone/abalone_train.csv",
-    # "https://storage.googleapis.com/download.tensorflow.org/data/abalone_train.csv",
-    names=["Length", "Diameter", "Height", "Whole weight", "Shucked weight",
-           "Viscera weight", "Shell weight", "Age"])
+import pathlib
 
-abalone_features = abalone_train.copy()
-abalone_labels = abalone_features.pop('Age')
+titanic_file_path = os.getcwd() + '/titanic/train.csv'
 
-# # Normalization. It is possible that normalize input type is 'dataframe'(is composed only numeric data)
-normalize = Normalization()
-normalize.adapt(abalone_features)
+text = pathlib.Path(titanic_file_path).read_text()
+lines = text.split('\n')[1:-1]
 
-norm_abalone_model = Sequential([normalize,
-                                 Dense(64),
-                                 Dense(1)])
-norm_abalone_model.compile(loss=keras.losses.MeanSquaredError(),
-                           optimizer=keras.optimizers.Adam())
-norm_abalone_model.fit(abalone_features, abalone_labels, epochs=10)
+titanic_types = [int(), str(), float(), int(), int(), float(), str(), str(), str(), str()]
 
-print("=======================")
-print("=======================")
+features = tf.io.decode_csv(lines, record_defaults=titanic_types)
+
+for f in features:
+    print(f"type: {f.dtype.name}, shape: {f.shape}")
+
+
