@@ -31,5 +31,16 @@ def get_basic_model():
 
     return model
 
-model = get_basic_model()
-model.fit(numeric_features, target, epochs=15, batch_size=BATCH_SIZE)
+# model = get_basic_model()
+# model.fit(numeric_features, target, epochs=15, batch_size=BATCH_SIZE)
+
+numeric_dataset = tf.data.Dataset.from_tensor_slices((numeric_features, target))
+
+for row in numeric_dataset.take(3):
+    print(row)
+
+values = []
+for key in sorted(dict(numeric_features)):
+    values.append(tf.cast(dict(numeric_features)[key], tf.float32))
+
+print("==========================")
