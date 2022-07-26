@@ -61,9 +61,8 @@ print('numeric_features')
 print(numeric_features)
 print()
 
-
-numeric_features_tf = tf.convert_to_tensor(numeric_features)
-print("apply 'tf.conver_to_tensor' to numeric_features")
+print("numeric_features_tf is applied numeric_features to 'tf.conver_to_tensor'")
+numeric_features_tf = tf.convert_to_tensor(numeric_features, target)
 print(numeric_features_tf.numpy())
 print()
 
@@ -75,7 +74,7 @@ print('normalizer numeric_features')
 print(normalizer(numeric_features.iloc[:3]))
 print()
 
-print("numeric_dataset: apply 'Dataset.from_tensor_slices' on (numeric_features, target)")
+print("numeric_dataset is applied (numeric_features, target) to 'Dataset.from_tensor_slices'")
 numeric_dataset = tf.data.Dataset.from_tensor_slices((numeric_features, target))
 for row in numeric_dataset.take(3):
     print(row)
@@ -88,13 +87,6 @@ for row in numeric_dict_ds.take(3):
 print()
 
 
-model2 = MyModel()
-model2.adapt(numeric_features)
-model2.compile(optimizer='adam',
-               loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
-               metrics=['accuracy'],
-               run_eagerly=True)
-model2.fit(numeric_features, target, epochs=5, batch_size=BATCH_SIZE)
 
 
 
