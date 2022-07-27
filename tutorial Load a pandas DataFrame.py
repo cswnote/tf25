@@ -86,11 +86,25 @@ for row in numeric_dict_ds.take(3):
     print(row)
 print()
 
+binary_feature_names = ['sex', 'fbs', 'exang']
+categorical_feature_names = ['cp', 'restecg', 'slope', 'thal', 'ca']
+
+inputs = {}
+for name, column in df.items():
+    if type(column[0]) == str:
+        dtype = tf.string
+    elif (name in binary_feature_names or
+          name in categorical_feature_names):
+        dtype = tf.int64
+    else:
+        dtype = tf.float32
+
+    # # don't refet to column, but column data is organized into input layers.................. why
+    inputs[name] = tf.keras.layers.Input(shape=(), name=name, dtype=dtype)
 
 
 
 
 
-
-
+print("======================================")
 print("======================================")
