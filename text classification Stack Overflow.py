@@ -17,8 +17,8 @@ file='stack_overflow_16k'
 url = 'https://storage.googleapis.com/download.tensorflow.org/data/stack_overflow_16k.tar.gz'
 
 # # 뭔가 이상함, cache_subdir=file로 한 후 '' 해야 directory 구조가 원하는 대로 됨
-dataset = tf.keras.utils.get_file(file, origin=url, untar=True, cache_dir='.' , cache_subdir=file)
-dataset = tf.keras.utils.get_file(file, origin=url, untar=True, cache_dir='.' , cache_subdir='')
+dataset = tf.keras.utils.get_file(file, origin=url, untar=True, cache_dir='.', cache_subdir=file)
+dataset = tf.keras.utils.get_file(file, origin=url, untar=True, cache_dir='.', cache_subdir='')
 
 train_dir = os.path.join(dataset, 'train')
 print(os.listdir(train_dir))
@@ -67,7 +67,7 @@ sample_file = os.path.join(sample_file, os.listdir(sample_file)[0])
 #     return tf.strings.regex_replace(stripped_html,
 #                                   '[%s]' % re.escape(string.punctuation),
 #                                   '')
-#
+#Î
 # vectorize_layer = tf.keras.layers.TextVectorization(
 #     standardize=custom_standardization,
 #     max_tokens=max_features,
