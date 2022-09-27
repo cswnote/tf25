@@ -4,6 +4,8 @@ import os
 import tensorflow as tf
 import platform
 
+print(tf.__version__)
+
 if platform.platform()[:3].lower() == 'win':
     cache_subdir = 'D:/workspace/Pycharm/tf25/dataset/'
 elif platform.platform()[:3].lower() == 'mac':
