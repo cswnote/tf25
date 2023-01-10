@@ -7,7 +7,7 @@ import platform
 print(tf.__version__)
 
 if platform.platform()[:3].lower() == 'win':
-    cache_subdir = 'D:/workspace/Pycharm/tf25/dataset/'
+    cache_subdir = 'e:/workspace/Pycharm/tf25/dataset/'
 elif platform.platform()[:3].lower() == 'mac':
     cache_subdir = '/Users/rainyseason/winston/Workspace/python/Pycharm Project/tf25/cats_and_dogs/'
 
