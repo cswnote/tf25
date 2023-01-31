@@ -1,17 +1,12 @@
-<<<<<<< HEAD
 import os
-=======
->>>>>>> origin/master
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 import tensorflow_datasets as tfds
-<<<<<<< HEAD
 
 from tensorflow.keras import layers
 
 # # Setup
-=======
 import os
 import platform
 
@@ -22,13 +17,11 @@ if platform.platform() == 'Windows-10-10.0.19044-SP0':
     path = os.getcwd() + '/dataset/'
     os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
->>>>>>> origin/master
 (train_ds, val_ds, test_ds), metadata = tfds.load(
     'tf_flowers',
     split=['train[:80%]', 'train[80%:90%]', 'train[90%:]'],
     with_info=True,
     as_supervised=True,
-<<<<<<< HEAD
 )
 
 num_classes = metadata.features['label'].num_classes
@@ -53,10 +46,6 @@ _ = plt.imshow(result)
 
 
 
-print('================')
-=======
-    data_dir=path
-)
 
 num_classes = metadata.features['label'].num_classes
 print("number of classes: {}".format(num_classes))
@@ -69,4 +58,3 @@ _ = plt.imshow(image)
 _ = plt.title(get_label_name[label])
 
 print('========================')
->>>>>>> origin/master
